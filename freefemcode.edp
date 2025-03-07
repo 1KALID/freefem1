@@ -93,7 +93,7 @@ solve p(V, w)
         )
    +on(C2, V=0) // Potentiel nul sur l’électrode supérieure
   +on(C29, V=300); // Potentiel fixé sur la base
-
+  // Potentiel fixé sur la base
   // **Calcul de la densité de courant**
 Vh Jx = -sigma * dx(V);
 Vh Jy = -sigma * dy(V);
