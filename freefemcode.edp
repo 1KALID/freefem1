@@ -1,3 +1,124 @@
-cout << "hello Eminem's people" << endl;
-cout << "hello Eminem's nass" << endl;
-cout << "hello Eminem's slimm" << endl;
+//cout << "hello Eminem's people" << endl;
+//cout << "hello Eminem's nass" << endl;
+real re = 80;   // Largeur de l'électrode (rayon) 
+real he = 10;   // Hauteur de l'électrode 
+real hs = 190;  // Hauteur du spacer 
+real hpe=50;
+real hse=30;
+real rp=30;
+real hts=80;
+real hp=80;
+real rpd=40;
+real hps=10;
+real hpi=10;
+real hpd=10;
+real rm=40;
+real hm=130;
+real hpm=20;
+
+border C1(t=0,1){x=0; y=he*t;}    
+border C2(t=0,1){x=re*t; y=he;}     
+border C3(t=0,1){x=re; y=he-he*t;}   
+border C4(t=0,1){x=re-re*t; y=0;} 
+
+border C5(t=0,1){x=re; y=-t*hse;}     // Gauche
+border C8(t=0,1){x=re+rp*t-re*t; y=-hse-hpe*t;}     // Gauche
+border C9(t=0,1){x=rp-rp*t; y=-hse-hpe;}     
+border C10(t=0,1){x=0; y=-hse-hpe+(hse+hpe)*t;}  
+
+//piston superieur
+border C11(t=0,1){x=rp; y=-hse-hpe-hpm*t;} 
+border C12(t=0,1){x=rp; y=-hse-hpe-hpm-(hp-hpm)*t;} 
+border C13(t=0,1){x=rp-t*rpd; y=-hse-hpe-hp;} 
+border C14(t=0,1){x=rp-rpd; y=-hse-hpe-hp+hps*t;} 
+border C15(t=0,1){x=rp-rpd-(rp-rpd)*t; y=-hse-hpe-hp+hps+hpi*t;} 
+border C16(t=0,1){x=0; y=-hse-hpe-hp+hps+hpi-(hpi+hps-hp)*t;} 
+
+//poudre
+border C17(t=0,1){x=rp; y=-hse-hpe-hp-hpd*t;} 
+border C18(t=0,1){x=rp-rpd*t; y=-hse-hpe-hp-hpd;} 
+border C19(t=0,1){x=rp-rpd; y=-hse-hpe-hp-hpd+hpd*t;} 
+
+//piston inferieur
+border C20(t=0,1){x=rp; y=-hse-hpe-hp-hpd-(hp-hpm)*t;} 
+border C21(t=0,1){x=rp; y=-hse-hpe-hp-hpd-hp+hpm-hpm*t;} 
+border C22(t=0,1){x=rp-rp*t; y=-hse-hpe-2*hp-hpd;} 
+border C23(t=0,1){x=0; y=-hse-hpe-2*hp-hpd+(hp-hpi-hps)*t;} 
+border C24(t=0,1){x=(rp-rpd)*t; y=-hse-hpe-hp-hpd-hps-hpi+hpi*t;}
+border C25(t=0,1){x=rp-rpd; y=-hse-hpe-hp-hpd-hps+hps*t;}
+
+//matrice
+border C26(t=0,1){x=rp+rm*t; y=-hse-hpe-hpm;} 
+border C27(t=0,1){x=rp+rm; y=-hse-hpe-hpm-hm*t;} 
+border C28(t=0,1){x=rp+rm-rm*t; y=-hse-hpe-hpm-hm;} 
+//spacer inferieur 
+border C29(t=0,1){x=rp-rp*t+re*t; y=-hse-hpe-2*hp-hpd-hpe*t;}
+border C30(t=0,1){x=re; y=-hse-2*hpe-2*hp-hpd-hse*t;} 
+border C31(t=0,1){x=re-re*t; y=-2*hse-2*hpe-2*hp-hpd;}   
+border C32(t=0,1){x=0; y=-2*hse-2*hpe-2*hp-hpd+hse*t+hpe*t;} 
+//electrode inferieur
+border C33(t=0,1){x=re; y=-2*hse-2*hpe-2*hp-hpd-t*he;} 
+border C34(t=0,1){x=re-re*t; y=-2*hse-2*hpe-2*hp-hpd-he;} 
+border C35(t=0,1){x=0; y=-2*hse-2*hpe-2*hp-hpd-he+he*t;}
+
+//int n = 20;
+plot(C1(-5) + C2(-5) + C3(-5) + C4(-5)+C5(-5)+C8(-5)+C9(-5)+C10(-5)+C11(-5)+C12(-5)+C13(-5)+C14(-5)+C15(-5)+C16(-5)+C17(-5)+C18(-5)+C19(-5)+C20(-5)+C21(-5)+C22(-5)+C23(-5)+C24(-5)+C25(-5)+C26(-5)+C27(-5)+C28(-5)+C29(-5)+C30(-5)+C31(-5)+C32(-5)+C33(-5)+C34(-5)+C35(-5));
+mesh Th = buildmesh(C1(-5) + C2(-5) + C3(-5) + C4(-5)+C5(-5)+C8(-5)+C9(-5)+C10(-5)+C11(-5)+C12(-5)+C13(-5)+C14(-5)+C15(-5)+C16(-5)+C17(-5)+C18(-5)+C19(-5)+C20(-5)+C21(-5)+C22(-5)+C23(-5)+C24(-5)+C25(-5)+C26(-5)+C27(-5)+C28(-5)+C29(-5)+C30(-5)+C31(-5)+C32(-5)+C33(-5)+C34(-5)+C35(-5));
+plot(Th, wait=true);
+// Fespace
+ fespace Vh(Th, P1);
+ Vh u, v;
+ Vh kappa=1 + 2*(y>-hse-hpe)*(y<0);
+
+ // Solve
+ solve a(u, v)
+ = int2d(Th)(
+ kappa*(
+ dx(u)*dx(v)
+ + dy(u)*dy(v)
+ )
+ )
+ +on(C2, u=25)
+ +on(C29, u=200)
+ ;
+
+ // **Équation de Poisson pour le potentiel électrique**
+real sigma = 1.0;  // Conductivité électrique uniforme
+Vh V, w;
+
+solve p(V, w) 
+= int2d(Th)(
+     sigma*(
+        dx(V)*dx(w) 
+        + dy(V)*dy(w)
+        ) 
+        )
+   +on(C2, V=0) // Potentiel nul sur l’électrode supérieure
+  +on(C29, V=300); // Potentiel fixé sur la base
+
+  // **Calcul de la densité de courant**
+Vh Jx = -sigma * dx(V);
+Vh Jy = -sigma * dy(V);
+Vh Jnorm = sqrt(Jx^2 + Jy^2); // Norme du vecteur densité de courant
+
+
+
+// Calcul du gradient de température
+Vh dTdx = dx(u); // Dérivée en x
+Vh dTdy = dy(u); // Dérivée en y
+Vh gradT = sqrt(dTdx^2 + dTdy^2); // Norme du gradient
+
+// **Conversion température en Celsius**
+Vh TempCelsius = u - 273.15;
+
+
+ // Plot la temperature
+plot(u, wait=true, value=true, fill=true, ps="HeatExchanger.");
+// Affichage du gradient de température
+plot(gradT, wait=true, value=true, fill=true, ps="GradientT.ps");
+   // Plot le potentiel
+plot(V, wait=true, value=true, fill=true, ps="Potentiel.");
+// Affichage la densite de courant
+plot(Jnorm, wait=true, value=true, fill=true, ps="CurrentDensity_Distribution.ps");
+// **afficher la conversion de la température en Celsius**
+plot(TempCelsius, wait=true, value=true, fill=true, ps="Temperature_Celsius.ps");
